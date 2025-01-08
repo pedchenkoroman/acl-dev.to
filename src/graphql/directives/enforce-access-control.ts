@@ -24,7 +24,7 @@ const enforceAccessControl = (directiveName: string) => {
             info: any,
           ) => {
             // ['article/*', 'users/*', ...]
-            const [action] = context.action.split(',').filter((action) => {
+            const [action] = context.action.split('|').filter((action) => {
               const namespace = action.split('/').at(0);
               return namespace === directive.namespace;
             });
@@ -33,9 +33,13 @@ const enforceAccessControl = (directiveName: string) => {
               throw new Error(`Namespace ${directive.namespace} does not exist!`);
             }
 
-            const [, ...allowedActions] = action.split('/');
+            const [, allowedActions] = action.split('/');
 
-            if (!allowedActions.some((action) => ['*', info.fieldName].includes(action))) {
+            console.log(allowedActions);
+
+            if (
+              !allowedActions.split(',').some((action) => ['*', info.fieldName].includes(action))
+            ) {
               throw new Error(`The action ${info.fieldName} is not allowed!`);
             }
 
