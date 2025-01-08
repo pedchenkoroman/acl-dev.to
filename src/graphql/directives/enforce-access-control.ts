@@ -23,7 +23,6 @@ const enforceAccessControl = (directiveName: string) => {
             context: { action: string },
             info: any,
           ) => {
-            // ['article/*', 'users/*', ...]
             const [action] = context.action.split('|').filter((action) => {
               const namespace = action.split('/').at(0);
               return namespace === directive.namespace;
