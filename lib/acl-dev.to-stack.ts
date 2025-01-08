@@ -19,10 +19,13 @@ export class AclDevToStack extends cdk.Stack {
     // Define the Lambda function resource
     const graphQlFunction = new NodejsFunction(this, 'GraphQlHandler', {
       runtime: Runtime.NODEJS_20_X, // Choose any supported Node.js runtime
-      entry: './lambda/graphql.ts',
+      entry: './src/lambda/graphql.ts',
       handler: 'handler',
       bundling: {
-        target: 'node20'
+        target: 'node20',
+        loader: {
+          '.graphql': 'text'
+        }
       }
     });
 

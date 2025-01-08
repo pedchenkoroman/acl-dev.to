@@ -1,0 +1,9 @@
+type Query {
+    hello: String
+}
+
+type Mutation {
+    publish: String @enforceAccessControl(namespace: "article")
+    delete: String @enforceAccessControl(namespace: "article")
+    saveDraft: String @enforceAccessControl(namespace: "article")
+}
