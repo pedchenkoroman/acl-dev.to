@@ -34,8 +34,6 @@ const enforceAccessControl = (directiveName: string) => {
 
             const [, allowedActions] = action.split('/');
 
-            console.log(allowedActions);
-
             if (
               !allowedActions.split(',').some((action) => ['*', info.fieldName].includes(action))
             ) {

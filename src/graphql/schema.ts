@@ -9,7 +9,9 @@ import {
 
 const resolvers = {
   Query: {
-    hello: () => 'world',
+    hello: () => {
+      return 'hello world';
+    },
   },
   Mutation: {
     publish: () => 'allow publish',

@@ -1,19 +1,21 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {Runtime} from 'aws-cdk-lib/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import {
   AuthorizationType,
-  CognitoUserPoolsAuthorizer, LambdaIntegration, RestApi
+  CognitoUserPoolsAuthorizer,
+  LambdaIntegration,
+  RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import {UserPool} from 'aws-cdk-lib/aws-cognito';
-import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { NodejsFunction, OutputFormat } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 export class AclDevToStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const userPool = new UserPool(this, 'ACLDevTo', {
-      userPoolName: 'aclDevTo'
+      userPoolName: 'aclDevTo',
     });
 
     // Define the Lambda function resource
@@ -21,19 +23,20 @@ export class AclDevToStack extends cdk.Stack {
       runtime: Runtime.NODEJS_20_X, // Choose any supported Node.js runtime
       entry: './src/lambda/graphql.ts',
       handler: 'handler',
+      description: 'graphql.ts',
       bundling: {
         target: 'node20',
         loader: {
-          '.graphql': 'text'
-        }
-      }
+          '.graphql': 'text',
+        },
+      },
     });
 
     const api = new RestApi(this, 'GraphQlApi');
 
     const auth = new CognitoUserPoolsAuthorizer(this, 'acl-dev-to-auth', {
-      cognitoUserPools: [userPool]
-    })
+      cognitoUserPools: [userPool],
+    });
 
     api.root.addMethod('POST', new LambdaIntegration(graphQlFunction), {
       authorizer: auth,
