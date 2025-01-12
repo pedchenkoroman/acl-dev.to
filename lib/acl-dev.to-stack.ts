@@ -7,8 +7,8 @@ import {
   LambdaIntegration,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { NodejsFunction, OutputFormat } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { ClientAttributes, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 export class AclDevToStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -16,6 +16,33 @@ export class AclDevToStack extends cdk.Stack {
 
     const userPool = new UserPool(this, 'ACLDevTo', {
       userPoolName: 'aclDevTo',
+    });
+
+    userPool.addClient('graphql-acl', {
+      userPoolClientName: 'Graphql ACL',
+      generateSecret: true,
+      authFlows: {
+        userPassword: true,
+      },
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+        callbackUrls: ['https://oauth.pstmn.io/v1/browser-callback'],
+      },
+      readAttributes: new ClientAttributes()
+        .withStandardAttributes({
+          email: true,
+          nickname: true,
+        })
+        .withCustomAttributes('action'),
+      writeAttributes: new ClientAttributes()
+        .withStandardAttributes({
+          email: true,
+          nickname: true,
+        })
+        .withCustomAttributes('action'),
+      enablePropagateAdditionalUserContextData: true,
     });
 
     // Define the Lambda function resource

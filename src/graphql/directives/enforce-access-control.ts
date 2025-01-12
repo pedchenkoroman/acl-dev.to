@@ -8,6 +8,7 @@ import type { GraphQLSchema } from 'graphql/type';
  */
 const enforceAccessControl = (directiveName: string) => {
   return {
+    // directive is a function with one argument
     enforceAccessControlTypeDefs: `directive @${directiveName}(namespace: String!) on FIELD_DEFINITION`,
     enforceAccessControlTransformer: (schema: GraphQLSchema) =>
       mapSchema(schema, {
@@ -23,24 +24,29 @@ const enforceAccessControl = (directiveName: string) => {
             context: { action: string },
             info: any,
           ) => {
-            const [action] = context.action.split('|').filter((action) => {
+            // 1. Locate the Namespace
+            const [namespaceActions] = context.action.split('|').filter((action) => {
               const namespace = action.split('/').at(0);
               return namespace === directive.namespace;
             });
 
-            if (!action) {
+            if (!namespaceActions) {
               throw new Error(`Namespace ${directive.namespace} does not exist!`);
             }
 
-            const [, allowedActions] = action.split('/');
+            // 2. Separate Namespace and Actions
+            const [, allowedActions] = namespaceActions.split('/');
 
-            if (
-              !allowedActions.split(',').some((action) => ['*', info.fieldName].includes(action))
-            ) {
-              throw new Error(`The action ${info.fieldName} is not allowed!`);
+            // 3. Check Actions
+            const isAllowedAction = allowedActions
+              .split(',')
+              .some((action) => ['*', info.fieldName].includes(action));
+
+            if (isAllowedAction) {
+              return resolve(source, args, context, info);
             }
 
-            return resolve(source, args, context, info);
+            throw new Error(`The action ${info.fieldName} is not allowed!`);
           };
 
           return { ...fieldConfig, resolve: patchedResolve };

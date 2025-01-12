@@ -9,7 +9,7 @@
     "watch": "node esbuild.config.js",
     "test": "jest",
     "cdk": "cdk",
-    "serve": "sam local start-api --profile=roman.pedchenko.88 --region=eu-central-1 -t cdk.out/AclDevToStack.template.json --debug",
+    "serve": "sam local start-api -t cdk.out/AclDevToStack.template.json",
     "serve:debug": "npm run serve -- --debug-port 5858"
   },
   "devDependencies": {
