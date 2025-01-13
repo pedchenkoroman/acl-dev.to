@@ -6,15 +6,18 @@
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
+    "watch": "node esbuild.config.js",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "serve": "sam local start-api -t cdk.out/AclDevToStack.template.json",
+    "serve:debug": "npm run serve -- --debug-port 5858"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.146",
     "@types/jest": "^29.5.14",
     "@types/node": "22.7.9",
     "aws-cdk": "2.173.2",
+    "esbuild": "^0.24.2",
     "jest": "^29.7.0",
     "prettier": "^3.4.2",
     "ts-jest": "^29.2.5",
